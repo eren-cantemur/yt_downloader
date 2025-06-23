@@ -5,6 +5,11 @@ import os
 
 def download_video(url, as_audio=False):
     try:
+        # Create downloads directory if it doesn't exist
+        downloads_dir = "downloads"
+        if not os.path.exists(downloads_dir):
+            os.makedirs(downloads_dir)
+        
         print(f"[⏳] Fetching video info from: {url}")
         yt = YouTube(url, on_progress_callback=on_progress)
         print(f"[📹] Title: {yt.title}")
@@ -16,18 +21,21 @@ def download_video(url, as_audio=False):
             if not stream:
                 print("[❌] No audio stream available")
                 return
-            out_file = stream.download()
-            base, ext = os.path.splitext(out_file)
-            mp3_file = base + '.mp3'
-            os.rename(out_file, mp3_file)
-            print(f"[✔] Downloaded audio: {mp3_file}")
+            out_file = stream.download(output_path=downloads_dir)
+            if out_file:
+                base, ext = os.path.splitext(out_file)
+                mp3_file = base + '.mp3'
+                os.rename(out_file, mp3_file)
+                print(f"[✔] Downloaded audio: {mp3_file}")
+            else:
+                print("[❌] Failed to download audio file")
         else:
             print("[🎥] Downloading video...")
             stream = yt.streams.get_highest_resolution()
             if not stream:
                 print("[❌] No video stream available")
                 return
-            video_file = stream.download()
+            video_file = stream.download(output_path=downloads_dir)
             print(f"[✔] Downloaded video: {video_file}")
             
     except Exception as e:
