@@ -2,13 +2,22 @@ import sys
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
 import os
+from datetime import datetime
 
-def download_video(url, as_audio=False):
+def download_video(url, as_audio=False, output_subdir=None):
     try:
         # Create downloads directory if it doesn't exist
         downloads_dir = "downloads"
         if not os.path.exists(downloads_dir):
             os.makedirs(downloads_dir)
+        
+        # If output_subdir is provided, create a subdirectory
+        if output_subdir:
+            output_path = os.path.join(downloads_dir, output_subdir)
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
+        else:
+            output_path = downloads_dir
         
         print(f"[⏳] Fetching video info from: {url}")
         yt = YouTube(url, on_progress_callback=on_progress)
@@ -21,7 +30,7 @@ def download_video(url, as_audio=False):
             if not stream:
                 print("[❌] No audio stream available")
                 return
-            out_file = stream.download(output_path=downloads_dir)
+            out_file = stream.download(output_path=output_path)
             if out_file:
                 base, ext = os.path.splitext(out_file)
                 mp3_file = base + '.mp3'
@@ -35,7 +44,7 @@ def download_video(url, as_audio=False):
             if not stream:
                 print("[❌] No video stream available")
                 return
-            video_file = stream.download(output_path=downloads_dir)
+            video_file = stream.download(output_path=output_path)
             print(f"[✔] Downloaded video: {video_file}")
             
     except Exception as e:
@@ -59,19 +68,26 @@ def read_urls_from_file(file_path):
         print(f"[❌] Error reading file: {str(e)}")
         return []
 
-def download_multiple_videos(urls, as_audio=False):
+def download_multiple_videos(urls, as_audio=False, batch_name=None):
     """Download multiple videos from a list of URLs."""
     total = len(urls)
     successful = 0
     failed = 0
     
+    # Create a folder name for batch download
+    if not batch_name:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        format_suffix = "audio" if as_audio else "video"
+        batch_name = f"batch_{format_suffix}_{timestamp}"
+    
     print(f"[📋] Starting download of {total} video(s)...")
+    print(f"[📁] Files will be saved to: downloads/{batch_name}/")
     print("-" * 50)
     
     for i, url in enumerate(urls, 1):
         print(f"\n[{i}/{total}] Processing: {url}")
         try:
-            download_video(url, as_audio)
+            download_video(url, as_audio, batch_name)
             successful += 1
         except Exception as e:
             print(f"[❌] Failed to download {url}: {str(e)}")
@@ -83,7 +99,7 @@ def download_multiple_videos(urls, as_audio=False):
     print(f"\n[📊] Download Summary:")
     print(f"   ✅ Successful: {successful}")
     print(f"   ❌ Failed: {failed}")
-    print(f"   📁 Files saved to: downloads/")
+    print(f"   📁 Files saved to: downloads/{batch_name}/")
 
 def main():
     if len(sys.argv) < 3:
@@ -110,7 +126,9 @@ def main():
         file_path = sys.argv[2]
         urls = read_urls_from_file(file_path)
         if urls:
-            download_multiple_videos(urls, as_audio)
+            # Use filename (without extension) as batch folder name
+            batch_name = os.path.splitext(os.path.basename(file_path))[0]
+            download_multiple_videos(urls, as_audio, batch_name)
         else:
             print("[❌] No valid URLs found in file.")
     
