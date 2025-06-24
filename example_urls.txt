@@ -1,0 +1,12 @@
+# Example URLs file for batch downloading
+# Lines starting with # are ignored
+# Put one URL per line
+
+# Rick Astley - Never Gonna Give You Up
+https://www.youtube.com/watch?v=dQw4w9WgXcQ
+
+# Ed Sheeran - Shape of You
+https://www.youtube.com/watch?v=JGwWNGJdvx8
+
+# Luis Fonsi - Despacito ft. Daddy Yankee
+https://www.youtube.com/watch?v=kJQP7kiw5Fk 

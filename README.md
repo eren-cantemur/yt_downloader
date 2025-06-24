@@ -13,6 +13,7 @@ To extract audio as `.mp3`, we also need `ffmpeg`:
 
 ### ▶️ Example Usage
 
+**Single video download:**
 ```bash
 python yt_downloader.py https://www.youtube.com/watch?v=dQw4w9WgXcQ mp3
 ```
@@ -21,4 +22,22 @@ python yt_downloader.py https://www.youtube.com/watch?v=dQw4w9WgXcQ mp3
 python yt_downloader.py https://www.youtube.com/watch?v=dQw4w9WgXcQ mp4
 ```
 
-Let me know if you want to make it fancier (e.g. progress bar, interactive prompt, saving in a folder, etc.)
+**Multiple videos download:**
+```bash
+python yt_downloader.py "url1" "url2" "url3" mp3
+```
+
+**Batch download from file:**
+```bash
+python yt_downloader.py --file example_urls.txt mp3
+```
+
+### 📝 Features
+
+- ✅ Single video download (mp3/mp4)
+- ✅ Multiple videos download
+- ✅ Batch download from URLs file
+- ✅ Progress tracking with download stats
+- ✅ Files saved to `downloads/` folder
+- ✅ Error handling and recovery
+- ✅ Comments support in URLs file (lines starting with #)
