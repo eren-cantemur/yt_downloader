@@ -1,8 +1,13 @@
 import sys
+import ssl
+import certifi
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
 import os
 from datetime import datetime
+
+# SSL sertifika sorununu çözmek için
+ssl._create_default_https_context = ssl._create_unverified_context
 
 def download_video(url, as_audio=False, output_subdir=None):
     try:
